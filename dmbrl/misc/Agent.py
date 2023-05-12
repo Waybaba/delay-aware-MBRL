@@ -3,7 +3,7 @@ from __future__ import print_function
 from __future__ import absolute_import
 
 import numpy as np
-from gym.monitoring import VideoRecorder
+# from gym.wrappers.monitoring import VideoRecorder
 from dotmap import DotMap
 from dmbrl.misc import logger
 
@@ -60,7 +60,7 @@ class Agent:
         if test_policy:
             logger.info('Testing the policy')
         video_record = record_fname is not None
-        recorder = None if not video_record else VideoRecorder(self.env, record_fname)
+        recorder = None
 
         times, rewards = [], []
         O, A, reward_sum, done = [self.env.reset()], [], 0, False

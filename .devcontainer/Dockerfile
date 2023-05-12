@@ -1,40 +1,91 @@
+# pytorch image base
 FROM pytorch/pytorch:1.12.1-cuda11.3-cudnn8-devel as base
-ENV DEBIAN_FRONTEND=noninteractive
-RUN rm /bin/sh && ln -s /bin/bash /bin/sh
+ENV NVIDIA_DRIVER_CAPABILITIES=${NVIDIA_DRIVER_CAPABILITIES},display \
+    DEBIAN_FRONTEND=noninteractive \
+    LANG=C.UTF-8 \
+    LC_ALL=C.UTF-8
 
-# Install pip
-RUN apt-get update
-RUN apt-get -y install python3 python3-pip python3-dev python3-tk
-RUN apt-get -y install libglu1-mesa libxi-dev libxmu-dev libglu1-mesa-dev
+# environment variables
+ARG USERNAME=waybaba
+ENV UDATADIR=/data \
+    UPRJDIR=/code \
+    UOUTDIR=/output \
+    UDEVICEID=docker
 
-# Install basic libraries
-RUN pip3 install --upgrade pip
-RUN pip3 install numpy tensorflow-gpu==1.9 matplotlib scipy scikit-learn future
+# apt
+RUN apt-get update && apt-get install -y \
+    curl \
+    git \
+    sudo \
+    wget \
+    ffmpeg \
+    libsm6 \
+    libxext6 \
+    htop \
+    vim \
+    && rm -rf /var/lib/apt/lists/*
 
-# Install MuJoCo + OpenAI gym
-RUN pip3 install gym==0.9.4
-RUN apt-get update
-RUN apt-get -y install unzip unetbootin wget
-RUN mkdir -p /.mujoco && cd /.mujoco && wget https://www.roboti.us/download/mjpro131_linux.zip && unzip mjpro131_linux.zip
-ENV MUJOCO_PY_MJKEY_PATH="/root/.mujoco/mjkey.txt"
-ENV MUJOCO_PY_MJPRO_PATH="/root/.mujoco/mjpro131"
-RUN pip3 install mujoco-py==0.5.7
+# python packages
+RUN conda install -y --name base -c conda-forge \
+    tensorboard \
+    pandas \
+    && rm -rf /var/lib/apt/lists/*
 
-# Install additional requirements
+RUN pip install \
+    opencv-python \
+    pytorch-lightning==1.7.7 \
+    # hydra-joblib-launcher \
+    hydra-core \
+    hydra-colorlog \
+    hydra-optuna-sweeper \
+    torchmetrics \
+    pyrootutils \
+    pre-commit \
+    pytest \
+    sh \
+    omegaconf \
+    rich \
+    fiftyone \
+    jupyter \
+    wandb \
+    grad-cam \
+    tensorboardx \
+    ipdb
+    # && rm -rf /var/lib/apt/lists/*
+
+RUN pip install \
+    hydra-joblib-launcher \
+    gymnasium \
+    mujoco \
+    gym==0.25.0 \
+    tianshou==0.4.11 \
+    ftfy \
+    regex
+
+# from delay aware paper
 RUN pip3 install datetime gitpython h5py tqdm dotmap cython
 
-# GPFlow
-RUN apt-get -y install git
-RUN git clone https://github.com/GPflow/GPflow.git
-RUN pip3 install pandas multipledispatch pytest
-RUN cd GPflow/ && pip install . --no-deps
 
-# Create copy of Deep MBRL repo and place in ~/handful-of-trials
-RUN cd ~ && git clone https://github.com/kchua/handful-of-trials.git
+# Non-root user creation and enter
+ARG USER_UID=1000
+ARG USER_GID=$USER_UID
+RUN groupadd --gid $USER_GID $USERNAME \
+    && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME \
+    && mkdir -p /home/$USERNAME/.vscode-server /home/$USERNAME/.vscode-server-insiders \
+    && chown ${USER_UID}:${USER_GID} /home/$USERNAME/.vscode-server* \
+    && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
+    && usermod -a -G audio,video $USERNAME \
+    && chmod 0440 /etc/sudoers.d/$USERNAME
+USER $USERNAME
+ENV HOME /home/$USERNAME
+WORKDIR $HOME
 
-# Environment setup
-RUN echo 'LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/x86_64-linux-gnu' >> /root/.bashrc
-RUN echo 'alias python=python3' >> /root/.bashrc
+RUN curl https://mujoco.org/download/mujoco210-linux-x86_64.tar.gz --output mujoco210.tar.gz
+RUN mkdir ~/.mujoco
+RUN tar -xf mujoco210.tar.gz --directory ~/.mujoco
+ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/.mujoco/mujoco210/bin
+USER root
+
 
 
 # CMD tensorboard --bind_all \
@@ -46,4 +97,3 @@ CMD	\
 	# -A 0.0.0.0 \
 	# & \
     sleep infinity
-
