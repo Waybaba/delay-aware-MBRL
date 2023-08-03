@@ -1,6 +1,5 @@
 # pytorch image base
-# FROM pytorch/pytorch:1.12.1-cuda11.3-cudnn8-devel as base
-FROM tensorflow/tensorflow:1.9.0-devel-gpu-py3 as base
+FROM pytorch/pytorch:1.12.1-cuda11.3-cudnn8-devel as base
 ENV NVIDIA_DRIVER_CAPABILITIES=${NVIDIA_DRIVER_CAPABILITIES},display \
     DEBIAN_FRONTEND=noninteractive \
     LANG=C.UTF-8 \
@@ -27,36 +26,41 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # python packages
-# RUN conda install -y --name base -c conda-forge \
-#     tensorboard \
-#     pandas \
-#     && rm -rf /var/lib/apt/lists/*
+RUN conda install -y --name base -c conda-forge \
+    tensorboard \
+    pandas \
+    && rm -rf /var/lib/apt/lists/*
 
-# RUN pip install \
-#     # hydra-joblib-launcher \
-#     hydra-core \
-#     hydra-colorlog \
-#     hydra-optuna-sweeper \
-#     pyrootutils \
-#     pre-commit \
-#     pytest \
-#     sh \
-#     omegaconf \
-#     rich \
-#     jupyter \
-#     wandb \
-#     grad-cam \
-#     ipdb
+RUN pip install \
+    opencv-python \
+    pytorch-lightning==1.7.7 \
+    # hydra-joblib-launcher \
+    hydra-core \
+    hydra-colorlog \
+    hydra-optuna-sweeper \
+    torchmetrics \
+    pyrootutils \
+    pre-commit \
+    pytest \
+    sh \
+    omegaconf \
+    rich \
+    fiftyone \
+    jupyter \
+    wandb \
+    grad-cam \
+    tensorboardx \
+    ipdb
     # && rm -rf /var/lib/apt/lists/*
 
-# RUN pip install \
-#     hydra-joblib-launcher \
-#     gymnasium \
-#     mujoco \
-#     gym==0.25.0 \
-#     tianshou==0.4.11 \
-#     ftfy \
-#     regex
+RUN pip install \
+    hydra-joblib-launcher \
+    gymnasium \
+    mujoco \
+    gym==0.25.0 \
+    tianshou==0.4.11 \
+    ftfy \
+    regex
 
 # from delay aware paper
 RUN pip3 install datetime gitpython h5py tqdm dotmap cython
