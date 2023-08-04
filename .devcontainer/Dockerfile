@@ -38,6 +38,7 @@ RUN apt-get update && apt-get install -y \
     # && rm -rf /var/lib/apt/lists/*
 
 ### pip
+RUN pip3 install --upgrade pip
 RUN pip install dotmap==1.2.20 \
     future==0.16.0 \
     gpflow==1.5.1 \
@@ -45,7 +46,7 @@ RUN pip install dotmap==1.2.20 \
     mujoco-py==0.5.7 \
     numpy==1.14.0 \
     scipy==0.19.0 \
-    tensorflow-gpu==1.9.0 \
+    tensorflow-gpu==1.7 \
     tqdm==4.19.4 \
     protobuf==3.6.1 \
     grpcio==1.23.0 \
@@ -88,5 +89,6 @@ USER root
 # RUN pip install einops typed-argument-parser scikit-video==1.1.11 scikit-image==0.17.2
 
 # end
-USER $USERNAME
+# USER $USERNAME
+USER root
 CMD	sleep infinity
