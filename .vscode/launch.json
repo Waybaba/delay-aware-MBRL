@@ -1,0 +1,32 @@
+{
+	// Use IntelliSense to learn about possible attributes.
+	// Hover to view descriptions of existing attributes.
+	// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "Python: Current File",
+			"type": "python",
+			"request": "launch",
+			"program": "${file}",
+			"console": "integratedTerminal",
+			"justMyCode": true
+		},
+		{
+			"name": "Run mbexp.py",
+			"type": "python",
+			"request": "launch",
+			"program": "${workspaceFolder}/mbexp.py",
+			"args": [
+			  "-logdir", "./log/DATS",
+			  "-env", "gym_pendulum",
+			  "-o", "exp_cfg.exp_cfg.ntrain_iters", "200",
+			  "-o", "exp_cfg.sim_cfg.delay_hor", "10",
+			  "-o", "ctrl_cfg.prop_cfg.delay_step", "10",
+			  "-ca", "opt-type", "CEM",
+			  "-ca", "model-type", "PE",
+			  "-ca", "prop-type", "E"
+			]
+		  }
+	]
+}

@@ -1,6 +1,8 @@
 # pytorch image base
 # FROM pytorch/pytorch:1.12.1-cuda11.3-cudnn8-devel as base
-FROM tensorflow/tensorflow:1.9.0-devel-gpu-py3 as base
+# FROM us-docker.pkg.dev/vertex-ai/training/pytorch-gpu.1-9:latest as base
+FROM dreamquark/brain-base-python:3.6.7-cuda9-cudnn7 as base
+
 ENV NVIDIA_DRIVER_CAPABILITIES=${NVIDIA_DRIVER_CAPABILITIES},display \
     DEBIAN_FRONTEND=noninteractive \
     LANG=C.UTF-8 \
@@ -13,7 +15,7 @@ ENV UDATADIR=/data \
     UOUTDIR=/output \
     UDEVICEID=docker
 
-# apt
+### apt
 RUN apt-get update && apt-get install -y \
     curl \
     git \
@@ -24,46 +26,28 @@ RUN apt-get update && apt-get install -y \
     libxext6 \
     htop \
     vim \
-    && rm -rf /var/lib/apt/lists/*
-
-# python packages
-# RUN conda install -y --name base -c conda-forge \
-#     tensorboard \
-#     pandas \
-#     && rm -rf /var/lib/apt/lists/*
-
-# RUN pip install \
-#     # hydra-joblib-launcher \
-#     hydra-core \
-#     hydra-colorlog \
-#     hydra-optuna-sweeper \
-#     pyrootutils \
-#     pre-commit \
-#     pytest \
-#     sh \
-#     omegaconf \
-#     rich \
-#     jupyter \
-#     wandb \
-#     grad-cam \
-#     ipdb
+    libosmesa6-dev \
+    libgl1-mesa-dev
     # && rm -rf /var/lib/apt/lists/*
 
-# RUN pip install \
-#     hydra-joblib-launcher \
-#     gymnasium \
-#     mujoco \
-#     gym==0.25.0 \
-#     tianshou==0.4.11 \
-#     ftfy \
-#     regex
-
-# from delay aware paper
-RUN pip3 install datetime gitpython h5py tqdm dotmap cython
+### pip
+RUN pip install dotmap==1.2.20 \
+    future==0.16.0 \
+    gpflow==1.5.1 \
+    gym==0.9.4 \
+    mujoco-py==0.5.7 \
+    numpy==1.14.0 \
+    scipy==0.19.0 \
+    tensorflow-gpu==1.9.0 \
+    tqdm==4.19.4 \
+    protobuf==3.6.1 \
+    grpcio==1.23.0 \
+    termcolor \
+    pandas==1.0.2
 
 
 # Non-root user creation and enter
-ARG USER_UID=1000
+ARG USER_UID=1666
 ARG USER_GID=$USER_UID
 RUN groupadd --gid $USER_GID $USERNAME \
     && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME \
@@ -76,20 +60,23 @@ USER $USERNAME
 ENV HOME /home/$USERNAME
 WORKDIR $HOME
 
-RUN curl https://mujoco.org/download/mujoco210-linux-x86_64.tar.gz --output mujoco210.tar.gz
+
+# install mujoco
 RUN mkdir ~/.mujoco
-RUN tar -xf mujoco210.tar.gz --directory ~/.mujoco
-ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/.mujoco/mujoco210/bin
+RUN wget https://github.com/deepmind/mujoco/releases/download/2.1.0/mujoco210-linux-x86_64.tar.gz
+RUN tar -zxvf mujoco210-linux-x86_64.tar.gz
+RUN mv mujoco210 ~/.mujoco/
+RUN rm mujoco210-linux-x86_64.tar.gz
+ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HOME/.mujoco/mujoco210/bin
+
 USER root
 
+# # install d4rl
+# RUN pip install git+https://github.com/Farama-Foundation/d4rl@master#egg=d4rl
+# RUN pip install dm_control mujoco-py==2.1.2.14
 
+# # install diffuser
+# RUN pip install einops typed-argument-parser scikit-video==1.1.11 scikit-image==0.17.2
 
-# CMD tensorboard --bind_all \
-# 	--logdir=${UOUTDIR}/pytorch_output \
-# 	& \
-CMD	\
-    # fiftyone app launch --remote \
-	# --port 5151 \
-	# -A 0.0.0.0 \
-	# & \
-    sleep infinity
+# end
+CMD	sleep infinity
