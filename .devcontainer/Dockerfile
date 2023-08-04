@@ -1,7 +1,10 @@
 # pytorch image base
 # FROM pytorch/pytorch:1.12.1-cuda11.3-cudnn8-devel as base
 # FROM us-docker.pkg.dev/vertex-ai/training/pytorch-gpu.1-9:latest as base
-FROM dreamquark/brain-base-python:3.6.7-cuda9-cudnn7 as base
+
+FROM dreamquark/brain-base-python:3.6-cuda9-cudnn7 as base
+# FROM dreamquark/brain-base-python:3.7-cuda9-cudnn7 as base
+# # FROM pytorch/pytorch:nightly-devel-cuda9.2-cudnn7 as base
 
 ENV NVIDIA_DRIVER_CAPABILITIES=${NVIDIA_DRIVER_CAPABILITIES},display \
     DEBIAN_FRONTEND=noninteractive \
@@ -30,6 +33,10 @@ RUN apt-get update && apt-get install -y \
     libgl1-mesa-dev
     # && rm -rf /var/lib/apt/lists/*
 
+# RUN conda install -y --name base -c conda-forge \
+#     python=3.6
+    # && rm -rf /var/lib/apt/lists/*
+
 ### pip
 RUN pip install dotmap==1.2.20 \
     future==0.16.0 \
@@ -54,8 +61,10 @@ RUN groupadd --gid $USER_GID $USERNAME \
     && mkdir -p /home/$USERNAME/.vscode-server /home/$USERNAME/.vscode-server-insiders \
     && chown ${USER_UID}:${USER_GID} /home/$USERNAME/.vscode-server* \
     && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
+    && echo $USERNAME ALL=\(ALL\) NOPASSWD:ALL >> /etc/sudoers \
     && usermod -a -G audio,video $USERNAME \
-    && chmod 0440 /etc/sudoers.d/$USERNAME
+    && chmod 0440 /etc/sudoers.d/
+
 USER $USERNAME
 ENV HOME /home/$USERNAME
 WORKDIR $HOME
@@ -79,4 +88,5 @@ USER root
 # RUN pip install einops typed-argument-parser scikit-video==1.1.11 scikit-image==0.17.2
 
 # end
+USER $USERNAME
 CMD	sleep infinity
