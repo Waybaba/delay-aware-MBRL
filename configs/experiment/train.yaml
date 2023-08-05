@@ -9,44 +9,6 @@ runner:
   _target_: src.runner.TrainRunner
   _partial_: true
 
-dataset:
-  _target_: diffuser.datasets.GoalDataset
-  _partial_: true
-  env: "maze2d-large-v1"
-  # custom_ds_path: ${paths.data_dir}/models/diffuser/maze2d-large-waybaba.hdf5
-  custom_ds_path: null
-  horizon: ${global_cfg.horizon}
-  normalizer: "LimitsNormalizer"
-  preprocess_fns: ["maze2d_set_terminals"]
-  use_padding: false
-  max_path_length: 40000
-
-render:
-  _target_: diffuser.utils.Maze2dRenderer
-  _partial_: true
-  env: ${dataset.env}
-
-
-net:
-  _target_: diffuser.models.TemporalUnet
-  _partial_: true
-  horizon: ${global_cfg.horizon}
-  dim_mults: [1, 4, 8]
-  attention: false
-
-model:
-  _target_: diffuser.models.GaussianDiffusion
-  _partial_: true
-  horizon: ${global_cfg.horizon}
-  n_timesteps: 256 # n_diffusion_steps in source code
-  loss_type: "l2"
-  clip_denoised: true
-  predict_epsilon: false
-  action_weight: 1
-  loss_weights: null
-  loss_discount: 1
-  # TODO add config for large0maze 2 in py file
-
 
 
 trainer:
