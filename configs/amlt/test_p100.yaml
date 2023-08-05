@@ -1,0 +1,33 @@
+code:
+  local_dir: $CONFIG_DIR/../../
+description: AMLT
+environment:
+  image: waybaba/rl:delay_aware_v1
+  setup:
+  - echo "setup start..."
+  - export UPRJDIR=/mnt/default/
+  - export UDATADIR=/mnt/storage/data
+  - export UOUTDIR=/mnt/storage/output
+  - mkdir -p /mnt/storage/output /mnt/storage/data
+  - echo "setup finished!"
+  username: waybaba
+search:
+  job_template:
+    command:
+    - python mbexp.py -logdir ./log/DATS -env {env_} -o exp_cfg.exp_cfg.ntrain_iters 200 -o exp_cfg.sim_cfg.delay_hor 10 -o ctrl_cfg.prop_cfg.delay_step 10 -ca opt-type CEM -ca model-type PE -ca prop-type E
+    name: Delay_Aware
+    sku: G1-P100
+  max_trials: 10000
+  type: grid
+  params:
+    - name: env_
+      values: [gym_pendulum]
+storage:
+  input:
+    container_name: v-wangwei1
+    local_dir: /mnt/storage
+    mount_dir: /mnt/storage
+    storage_account_name: resrchvc4data
+target:
+  name: msrresrchvc
+  service: singularity
