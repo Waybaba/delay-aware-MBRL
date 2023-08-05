@@ -6,15 +6,18 @@ import os
 import argparse
 import pprint
 import copy
-os.environ["CUDA_VISIBLE_DEVICES"] = "-1"  # Force TF to use only the CPU
+# os.environ["CUDA_VISIBLE_DEVICES"] = "-1"  # Force TF to use only the CPU
 # os.environ["CUDA_VISIBLE_DEVICES"] = "0"  # Force TF to use only the CPU
 import tensorflow as tf
 # config = tf.ConfigProto()
 # config.gpu_options.allow_growth = True
+# config.gpu_options.per_process_gpu_memory_fraction = 0.1
 # session = tf.Session(config=config)
-# gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.9)
-# tf.Session(config=tf.ConfigProto(gpu_options=gpu_options,allow_soft_placement=True))
+# # 使用配置创建全局会话
+# sess = tf.Session(config=config)
 
+# 设置为默认会话
+# tf.keras.backend.set_session(sess)
 
 
 
