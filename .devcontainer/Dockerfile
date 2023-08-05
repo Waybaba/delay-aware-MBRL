@@ -3,10 +3,10 @@
 # FROM us-docker.pkg.dev/vertex-ai/training/pytorch-gpu.1-9:latest as base
 
 # FROM dreamquark/brain-base-python:3.6-cuda9-cudnn7 as base
-# FROM dreamquark/brain-base-python:3.7-cuda9-cudnn7 as base
+FROM dreamquark/brain-base-python:3.7-cuda9-cudnn7 as base
 # # FROM pytorch/pytorch:nightly-devel-cuda9.2-cudnn7 as base
 
-FROM ufoym/deepo:tensorflow-py36-cu90 as base
+# FROM ufoym/deepo:tensorflow-py36-cu90 as base
 
 ENV NVIDIA_DRIVER_CAPABILITIES=${NVIDIA_DRIVER_CAPABILITIES},display \
     DEBIAN_FRONTEND=noninteractive \
@@ -54,19 +54,27 @@ RUN apt-get -y install libglu1-mesa libxi-dev libxmu-dev libglu1-mesa-dev
 
 ### pip
 RUN pip3 install --upgrade pip
-RUN pip install dotmap==1.2.20 \
+RUN pip install \
+    'tensorflow-gpu==1.13.2' \
+    pytorch-lightning==1.7.7 \
+    dotmap==1.2.20 \
     future==0.16.0 \
     gpflow==1.5.1 \
     gym==0.9.4 \
     mujoco-py==0.5.7 \
-    numpy==1.14.0 \
+    'numpy<=1.17.2' \
     scipy==0.19.0 \
-    tensorflow-gpu==1.9.0 \
-    tqdm==4.19.4 \
+    tqdm \
     protobuf==3.6.1 \
     grpcio==1.23.0 \
     termcolor \
-    pandas==1.0.2
+    pandas==1.0.2 \
+    wandb \
+    pyrootutils \
+    hydra-joblib-launcher \
+    hydra-core \
+    hydra-colorlog \
+    hydra-optuna-sweeper
 
 
 # Non-root user creation and enter
