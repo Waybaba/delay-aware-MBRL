@@ -1,41 +1,12 @@
+# pytorch image base
+# FROM pytorch/pytorch:1.12.1-cuda11.3-cudnn8-devel as base
+# FROM us-docker.pkg.dev/vertex-ai/training/pytorch-gpu.1-9:latest as base
+
+# FROM dreamquark/brain-base-python:3.6-cuda9-cudnn7 as base
+# FROM dreamquark/brain-base-python:3.7-cuda9-cudnn7 as base
+# # FROM pytorch/pytorch:nightly-devel-cuda9.2-cudnn7 as base
+
 FROM ufoym/deepo:tensorflow-py36-cu90 as base
-
-RUN rm /bin/sh && ln -s /bin/bash /bin/sh
-
-# Install pip
-RUN apt-get update
-# RUN apt-get -y install python3 python3-pip python3-dev python3-tk
-RUN apt-get -y install libglu1-mesa libxi-dev libxmu-dev libglu1-mesa-dev
-
-# Install basic libraries
-RUN pip3 install --upgrade pip
-RUN pip3 install numpy tensorflow-gpu==1.9 matplotlib scipy scikit-learn future
-
-# Install MuJoCo + OpenAI gym
-# RUN pip3 install gym==0.9.4
-# RUN apt-get update
-# RUN apt-get -y install unzip unetbootin wget
-# RUN mkdir -p /.mujoco && cd /.mujoco && wget https://www.roboti.us/download/mjpro131_linux.zip && unzip mjpro131_linux.zip
-# ENV MUJOCO_PY_MJKEY_PATH="/root/.mujoco/mjkey.txt"
-# ENV MUJOCO_PY_MJPRO_PATH="/root/.mujoco/mjpro131"
-# RUN pip3 install mujoco-py==0.5.7
-
-# Install additional requirements
-RUN pip3 install datetime gitpython h5py tqdm dotmap cython
-
-# GPFlow
-# RUN apt-get -y install git
-# RUN git clone https://github.com/GPflow/GPflow.git
-# RUN pip3 install pandas multipledispatch pytest
-# RUN cd GPflow/ && pip install . --no-deps
-
-# Create copy of Deep MBRL repo and place in ~/handful-of-trials
-# RUN cd ~ && git clone https://github.com/kchua/handful-of-trials.git
-
-# Environment setup
-RUN echo 'LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/x86_64-linux-gnu' >> /root/.bashrc
-RUN echo 'alias python=python3' >> /root/.bashrc
-
 
 ENV NVIDIA_DRIVER_CAPABILITIES=${NVIDIA_DRIVER_CAPABILITIES},display \
     DEBIAN_FRONTEND=noninteractive \
@@ -49,31 +20,32 @@ ENV UDATADIR=/data \
     UOUTDIR=/output \
     UDEVICEID=docker
 
+### in China
+RUN sed -i 's/archive.ubuntu.com/mirrors.tuna.tsinghua.edu.cn/g' /etc/apt/sources.list
+RUN sed -i 's/security.ubuntu.com/mirrors.tuna.tsinghua.edu.cn/g' /etc/apt/sources.list
+RUN echo "[global]\n\
+index-url = https://pypi.tuna.tsinghua.edu.cn/simple/\n\
+trusted-host = https://pypi.tuna.tsinghua.edu.cn" > /etc/pip.conf
 
 
 ### apt
 RUN apt-get update && apt-get install -y \
-#     curl \
-#     git \
+    curl \
+    git \
     sudo \
-#     wget \
-#     ffmpeg \
-#     libsm6 \
-#     libxext6 \
-#     htop \
-#     vim \
-#     libosmesa6-dev \
-#     libgl1-mesa-dev
-    unzip \
-    unetbootin \
     wget \
-    && echo 123
+    ffmpeg \
+    libsm6 \
+    libxext6 \
+    htop \
+    vim \
+    libosmesa6-dev \
+    libgl1-mesa-dev
     # && rm -rf /var/lib/apt/lists/*
 
-
-# RUN apt-get update
-# RUN apt-get -y install python3 python3-pip python3-dev python3-tk
-# RUN apt-get -y install libglu1-mesa libxi-dev libxmu-dev libglu1-mesa-dev
+RUN apt-get update
+RUN apt-get -y install python3 python3-pip python3-dev python3-tk
+RUN apt-get -y install libglu1-mesa libxi-dev libxmu-dev libglu1-mesa-dev
 
 
 # RUN conda install -y --name base -c conda-forge \
@@ -87,9 +59,9 @@ RUN pip install dotmap==1.2.20 \
     gpflow==1.5.1 \
     gym==0.9.4 \
     mujoco-py==0.5.7 \
-    'numpy<=1.16.0' \
+    numpy==1.14.0 \
     scipy==0.19.0 \
-    tensorflow-gpu==1.9 \
+    tensorflow-gpu==1.9.0 \
     tqdm==4.19.4 \
     protobuf==3.6.1 \
     grpcio==1.23.0 \
@@ -115,22 +87,12 @@ WORKDIR $HOME
 
 
 # install mujoco
-# RUN mkdir ~/.mujoco
-# RUN wget https://github.com/deepmind/mujoco/releases/download/2.1.0/mujoco210-linux-x86_64.tar.gz
-# RUN tar -zxvf mujoco210-linux-x86_64.tar.gz
-# RUN mv mujoco210 ~/.mujoco/
-# RUN rm mujoco210-linux-x86_64.tar.gz
-# ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HOME/.mujoco/mujoco210/bin
-
-USER root
-RUN pip3 install gym==0.9.4
-# RUN apt-get update
-# RUN apt-get -y install unzip unetbootin wget
-RUN mkdir -p /.mujoco && cd /.mujoco && wget https://www.roboti.us/download/mjpro131_linux.zip && unzip mjpro131_linux.zip
-ENV MUJOCO_PY_MJKEY_PATH="/root/.mujoco/mjkey.txt"
-ENV MUJOCO_PY_MJPRO_PATH="/root/.mujoco/mjpro131"
-RUN pip3 install mujoco-py==0.5.7
-ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HOME/.mujoco/mjpro131/bin
+RUN mkdir ~/.mujoco
+RUN wget https://github.com/deepmind/mujoco/releases/download/2.1.0/mujoco210-linux-x86_64.tar.gz
+RUN tar -zxvf mujoco210-linux-x86_64.tar.gz
+RUN mv mujoco210 ~/.mujoco/
+RUN rm mujoco210-linux-x86_64.tar.gz
+ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HOME/.mujoco/mujoco210/bin
 
 USER root
 

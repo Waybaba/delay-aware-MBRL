@@ -8,7 +8,7 @@ import pprint
 import copy
 # os.environ["CUDA_VISIBLE_DEVICES"] = "-1"  # Force TF to use only the CPU
 # os.environ["CUDA_VISIBLE_DEVICES"] = "0"  # Force TF to use only the CPU
-import tensorflow as tf
+# import tensorflow as tf
 # config = tf.ConfigProto()
 # config.gpu_options.allow_growth = True
 # config.gpu_options.per_process_gpu_memory_fraction = 0.1
