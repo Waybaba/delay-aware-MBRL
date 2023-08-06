@@ -82,20 +82,25 @@ RUN apt-get update && apt-get install -y \
 
 ### pip
 RUN pip3 install --upgrade pip
-RUN pip install dotmap==1.2.20 \
+RUN pip3 install \
+    -i https://pypi.tuna.tsinghua.edu.cn/simple \
+    tensorflow-gpu==1.11 \
+    dotmap==1.2.20 \
     future==0.16.0 \
     gpflow==1.5.1 \
     gym==0.9.4 \
     mujoco-py \
     'numpy<=1.16.0' \
-    scipy==0.19.0 \
-    tensorflow-gpu==1.9 \
+    scipy \
     tqdm==4.19.4 \
     protobuf==3.6.1 \
-    grpcio==1.23.0 \
-    termcolor \
-    pandas==1.0.2
+    grpcio \
+    pandas
+    termcolor
 
+
+pip install tensorflow-gpu==1.13
+pip install dotmap scipy gpflow
 
 # Non-root user creation and enter
 ARG USER_UID=1666
