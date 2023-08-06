@@ -16,7 +16,7 @@ search:
     command:
     - python mbexp.py -logdir ./log/DATS -env {env_} -o exp_cfg.exp_cfg.ntrain_iters 200 -o exp_cfg.sim_cfg.delay_hor 10 -o ctrl_cfg.prop_cfg.delay_step 10 -ca opt-type CEM -ca model-type PE -ca prop-type E
     name: Delay_Aware
-    sku: G1-P100
+    sku: G1-P40
   max_trials: 10000
   type: grid
   params:
