@@ -7,3 +7,5 @@ log/
 /venv
 
 /results
+/configs/hydra/launcher/submit_slurm.sh
+/out_log

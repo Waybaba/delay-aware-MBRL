@@ -14,6 +14,7 @@ from dmbrl.misc import logger
 import copy
 import wandb
 import numpy as np
+import random
 
 
 class MBExperiment:
@@ -72,7 +73,7 @@ class MBExperiment:
 
         self.logdir = os.path.join(
             get_required_argument(params.log_cfg, "logdir", "Must provide log parent directory."),
-            strftime("%Y-%m-%d--%H-%M-%S", localtime())
+            strftime("%Y-%m-%d--%H-%M-%S", localtime()) + '-' + str(random.randint(0, 9999))
         )
         logger.set_file_handler(path=self.logdir)
         logger.info('Starting the experiments')
@@ -196,6 +197,9 @@ class MBExperiment:
                 "eval/ac": np.mean(np.square(np.array([sample["ac"] for sample in samples])), axis=0),
             }, step=global_steps
             )
+            print("#"*100)
+            print("### global_steps: ", global_steps)
+            print("#"*100)
             # Delete iteration directory if not used
             if len(os.listdir(iter_dir)) == 0:
                 os.rmdir(iter_dir)
@@ -208,13 +212,14 @@ class MBExperiment:
                 )
 
                 # TODO: train the policy network
-            if global_steps >= 1e+6:
+            if global_steps >= 1e+3:
+            # if global_steps >= 1e+6:
                 wandb.log({
                         "eval/reward": np.mean(traj_rets),
                         "eval/return": np.mean(traj_rets),
                         "eval/episode_length": np.mean([len(sample["ac"]) for sample in samples]),
                         "eval/ac": np.mean(np.square(np.array(traj_acs)), axis=0),
-                    }, step=1e+6
+                    }, step=int(1e+6)
                 )
                 break
-        wandb.close()
+        wandb.finish()

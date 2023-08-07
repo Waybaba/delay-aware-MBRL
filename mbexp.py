@@ -12,6 +12,9 @@ import tensorflow as tf
 import wandb
 config = tf.ConfigProto()
 config.gpu_options.allow_growth = True
+# config.intra_op_parallelism_threads = 12
+# config.inter_op_parallelism_threads = 2
+# tf.session(config=config)
 
 
 
@@ -72,8 +75,7 @@ if __name__ == "__main__":
         project="mbexp",
         tags=[args.tag],
         config=args,
-        dir=args.logdir,
-        mode="online",
+        dir=args.logdir
     )
 
     main(args.env, "MPC", args.ctrl_arg, args.override, args.logdir, args)
