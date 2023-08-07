@@ -222,4 +222,6 @@ class MBExperiment:
                     }, step=int(1e+6)
                 )
                 break
+        print("\n#####")
+        print("finished sucessfully")
         wandb.finish()
