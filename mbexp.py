@@ -60,6 +60,7 @@ if __name__ == "__main__":
     parser.add_argument('-env_name', type=str, help='environment name')
     # env_delay
     parser.add_argument('-env_delay', type=int, default=0, help='delay of the environment')
+    parser.add_argument('-tag', type=str, default='notag', help='tag for wandb')
     args = parser.parse_args()
 
     # seed
@@ -69,7 +70,7 @@ if __name__ == "__main__":
 
     wandb.init(
         project="mbexp",
-        tags=["mbexp", "notag"],
+        tags=[args.tag],
         config=args,
         dir=args.logdir,
         mode="online",
