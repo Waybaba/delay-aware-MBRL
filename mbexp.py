@@ -10,8 +10,8 @@ import copy
 # os.environ["CUDA_VISIBLE_DEVICES"] = "0"  # Force TF to use only the CPU
 import tensorflow as tf
 import wandb
-config = tf.ConfigProto()
-config.gpu_options.allow_growth = True
+# config = tf.ConfigProto()
+# config.gpu_options.allow_growth = True
 # config.intra_op_parallelism_threads = 12
 # config.inter_op_parallelism_threads = 2
 # tf.session(config=config)
