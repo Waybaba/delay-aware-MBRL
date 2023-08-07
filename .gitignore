@@ -10,3 +10,4 @@ log/
 /configs/hydra/launcher/submit_slurm.sh
 /out_log
 /tmp
+/submit_slurm.sh
