@@ -213,12 +213,8 @@ class MBExperiment:
 
                 # TODO: train the policy network
             # if global_steps >= 1e+3:
-<<<<<<< HEAD
             # import pdb; pdb.set_trace()
             if global_steps >= self._params.exp_cfg.n_steps:
-=======
-            if global_steps >= 1e+4:
->>>>>>> e46447199d47ec6737e3e9ac6b9031333e96a539
                 break
         wandb.log({
             "eval/reward": np.mean([sample["reward_sum"] for sample in samples]),
