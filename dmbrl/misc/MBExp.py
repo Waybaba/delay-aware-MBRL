@@ -213,14 +213,15 @@ class MBExperiment:
 
                 # TODO: train the policy network
             # if global_steps >= 1e+3:
-            if global_steps >= 1e+6:
+            # import pdb; pdb.set_trace()
+            if global_steps >= self._params.exp_cfg.n_steps:
                 break
         wandb.log({
             "eval/reward": np.mean([sample["reward_sum"] for sample in samples]),
             "eval/return": np.mean([sample["reward_sum"] for sample in samples]),
             "eval/episode_length": np.mean([len(sample["ac"]) for sample in samples]),
             "eval/ac": np.mean(np.square(np.array([sample["ac"] for sample in samples])), axis=0),
-        }, step=global_steps
+        }, step=self._params.exp_cfg.n_steps
         )
         print("\n#####")
         print("finished sucessfully")
