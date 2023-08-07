@@ -12,6 +12,7 @@ from dmbrl.misc.DotmapUtils import get_required_argument
 from dmbrl.misc.Agent import Agent
 from dmbrl.misc import logger
 import copy
+import wandb
 import numpy as np
 
 
@@ -120,6 +121,7 @@ class MBExperiment:
             )
 
         # Training loop
+        global_steps = 0
         for i in range(self.ntrain_iters):
 
             logger.info("####################################################################")
@@ -141,6 +143,7 @@ class MBExperiment:
                     )
                 )
                 finished_num_steps += len(samples[-1]["ac"])
+                global_steps += sum([len(sample["ac"]) for sample in samples])
 
                 if finished_num_steps >= needed_num_steps:
                     break
@@ -186,6 +189,13 @@ class MBExperiment:
                     'episode_iter_id': episode_iter_id
                 }
             )
+            wandb.log({
+                "eval/reward": np.mean([sample["reward_sum"] for sample in samples]),
+                "eval/return": np.mean([sample["reward_sum"] for sample in samples]),
+                "eval/episode_length": np.mean([len(sample["ac"]) for sample in samples]),
+                "eval/ac": np.mean(np.square(np.array([sample["ac"] for sample in samples])), axis=0),
+            }, step=global_steps
+            )
             # Delete iteration directory if not used
             if len(os.listdir(iter_dir)) == 0:
                 os.rmdir(iter_dir)
@@ -198,3 +208,13 @@ class MBExperiment:
                 )
 
                 # TODO: train the policy network
+            if global_steps >= 1e+6:
+                wandb.log({
+                        "eval/reward": np.mean(traj_rets),
+                        "eval/return": np.mean(traj_rets),
+                        "eval/episode_length": np.mean([len(sample["ac"]) for sample in samples]),
+                        "eval/ac": np.mean(np.square(np.array(traj_acs)), axis=0),
+                    }, step=1e+6
+                )
+                break
+        wandb.close()

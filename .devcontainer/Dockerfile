@@ -82,25 +82,21 @@ RUN apt-get update && apt-get install -y \
 
 ### pip
 RUN pip3 install --upgrade pip
-RUN pip3 install \
-    -i https://pypi.tuna.tsinghua.edu.cn/simple \
-    tensorflow-gpu==1.11 \
-    dotmap==1.2.20 \
+RUN pip install dotmap==1.2.20 \
     future==0.16.0 \
     gpflow==1.5.1 \
     gym==0.9.4 \
-    mujoco-py \
+    mujoco-py==0.5.7 \
     'numpy<=1.16.0' \
-    scipy \
+    scipy==0.19.0 \
+    tensorflow-gpu==1.9 \
     tqdm==4.19.4 \
     protobuf==3.6.1 \
-    grpcio \
-    pandas
-    termcolor
+    grpcio==1.23.0 \
+    termcolor \
+    pandas==1.0.2
+    # wandb==0.13.11
 
-
-pip install tensorflow-gpu==1.13
-pip install dotmap scipy gpflow
 
 # Non-root user creation and enter
 ARG USER_UID=1666
@@ -127,8 +123,8 @@ RUN mv mujoco210 ~/.mujoco/
 RUN rm mujoco210-linux-x86_64.tar.gz
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HOME/.mujoco/mujoco210/bin
 
-# USER root
-# RUN pip3 install gym==0.9.4
+USER root
+RUN pip3 install gym==0.9.4
 # RUN apt-get update
 # RUN apt-get -y install unzip unetbootin wget
 # RUN mkdir -p /.mujoco && cd /.mujoco && wget https://www.roboti.us/download/mjpro131_linux.zip && unzip mjpro131_linux.zip

@@ -9,6 +9,7 @@ import copy
 # os.environ["CUDA_VISIBLE_DEVICES"] = "-1"  # Force TF to use only the CPU
 # os.environ["CUDA_VISIBLE_DEVICES"] = "0"  # Force TF to use only the CPU
 import tensorflow as tf
+import wandb
 config = tf.ConfigProto()
 config.gpu_options.allow_growth = True
 
@@ -54,6 +55,24 @@ if __name__ == "__main__":
                         help='Directory to which results will be logged (default: ./log)')
     parser.add_argument('-e_popsize', type=int, default=500,
                         help='different popsize to use')
+    parser.add_argument('-seed', type=int, default=0)
+    # env_name
+    parser.add_argument('-env_name', type=str, help='environment name')
+    # env_delay
+    parser.add_argument('-env_delay', type=int, default=0, help='delay of the environment')
     args = parser.parse_args()
+
+    # seed
+    tf.set_random_seed(args.seed)
+    import numpy as np
+    np.random.seed(args.seed)
+
+    wandb.init(
+        project="mbexp",
+        tags=["mbexp", "notag"],
+        config=args,
+        dir=args.logdir,
+        mode="online",
+    )
 
     main(args.env, "MPC", args.ctrl_arg, args.override, args.logdir, args)

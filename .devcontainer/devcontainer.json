@@ -9,15 +9,19 @@
 		// "-p", "5151:5151",
 		"--volume", "${localEnv:UDATADIR}:/data",
 		"--volume", "${localEnv:UPRJDIR}:/code",
-		"--volume", "${localEnv:UOUTDIR}:/output"
-		// "fiftyone app launch --remote --port 5151 -A 0.0.0.0"
+		"--volume", "${localEnv:UOUTDIR}:/output",
+		// "fiftyone app launch --remote --port 5151 -A 0.0.0.0"		
 	],
 	"overrideCommand": false, // important! the default true will override the command in the dockerfile as "/bin/sh -c "while sleep 1000; do :; done"" so that tensorboard service will be down
+	"environment": {
+		"WANDB_API_KEY": "${localEnv:WANDB_API_KEY}",
+	},
 	"extensions": [
 		"ms-python.python",
 		"GitHub.copilot",
 		"GitHub.vscode-pull-request-github"
 	],
+	// for China
 	"settings": {
 		"lldb.adapterType": "native",
 		"lldb.executable": "/usr/bin/lldb",
