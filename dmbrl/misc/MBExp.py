@@ -212,16 +212,16 @@ class MBExperiment:
                 )
 
                 # TODO: train the policy network
-            if global_steps >= 1e+3:
-            # if global_steps >= 1e+6:
-                wandb.log({
-                        "eval/reward": np.mean(traj_rets),
-                        "eval/return": np.mean(traj_rets),
-                        "eval/episode_length": np.mean([len(sample["ac"]) for sample in samples]),
-                        "eval/ac": np.mean(np.square(np.array(traj_acs)), axis=0),
-                    }, step=int(1e+6)
-                )
+            # if global_steps >= 1e+3:
+            if global_steps >= 1e+6:
                 break
+        wandb.log({
+            "eval/reward": np.mean([sample["reward_sum"] for sample in samples]),
+            "eval/return": np.mean([sample["reward_sum"] for sample in samples]),
+            "eval/episode_length": np.mean([len(sample["ac"]) for sample in samples]),
+            "eval/ac": np.mean(np.square(np.array([sample["ac"] for sample in samples])), axis=0),
+        }, step=global_steps
+        )
         print("\n#####")
         print("finished sucessfully")
         wandb.finish()
